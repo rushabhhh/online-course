@@ -6,6 +6,7 @@ import Navigation from "@/components/Navigation";
 import webDevCourse from "@/assets/course-web-dev.jpg";
 import designCourse from "@/assets/course-design.jpg";
 import dataScienceCourse from "@/assets/course-data-science.jpg";
+import React, { useState } from "react";
 
 const enrolledCourses = [
   {
@@ -46,7 +47,36 @@ const stats = [
   { label: "Certificates", value: "5", icon: Award },
 ];
 
+// New sample certificates (replace or extend with real data)
+const certificates = [
+  {
+    id: "cert-1",
+    title: "Full Stack Web Development",
+    course: "Complete Web Development Bootcamp 2024",
+    date: "Sep 10, 2024",
+    issuer: "Online Course Platform",
+    grade: "Distinction",
+  },
+  // add more certificate objects here
+];
+
 const Dashboard = () => {
+  const [activeLearningSection, setActiveLearningSection] = useState<"courses" | "certifications">(
+    "courses"
+  );
+
+  const downloadCertificate = (cert: typeof certificates[number]) => {
+    // simple placeholder download (replace with real PDF generation)
+    const content = `${cert.title}\nCourse: ${cert.course}\nIssued: ${cert.date}\nIssuer: ${cert.issuer}\nGrade: ${cert.grade}`;
+    const blob = new Blob([content], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${cert.id}.txt`; // change to .pdf when real cert available
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
@@ -65,10 +95,24 @@ const Dashboard = () => {
               </div>
               
               <nav className="space-y-2">
-                <Button variant="default" className="w-full justify-start gap-2">
+                <Button
+                  variant={activeLearningSection === "courses" ? "default" : "ghost"}
+                  className="w-full justify-start gap-2"
+                  onClick={() => setActiveLearningSection("courses")}
+                >
                   <User className="h-4 w-4" />
-                  My Learning
+                  My Courses
                 </Button>
+
+                <Button
+                  variant={activeLearningSection === "certifications" ? "default" : "ghost"}
+                  className="w-full justify-start gap-2"
+                  onClick={() => setActiveLearningSection("certifications")}
+                >
+                  <Award className="h-4 w-4" />
+                  Certifications
+                </Button>
+
                 <Button variant="ghost" className="w-full justify-start gap-2">
                   <Settings className="h-4 w-4" />
                   Settings
@@ -105,64 +149,106 @@ const Dashboard = () => {
                 </Card>
               ))}
             </div>
-            
-            {/* Enrolled Courses */}
-            <div>
-              <h2 className="text-2xl font-bold mb-6">My Courses</h2>
-              <div className="space-y-4">
-                {enrolledCourses.map((course) => (
-                  <Card key={course.id} className="overflow-hidden hover:card-shadow-hover transition-smooth">
-                    <div className="grid md:grid-cols-4 gap-4 p-6">
-                      <div className="aspect-video md:aspect-square rounded-lg overflow-hidden">
-                        <img
-                          src={course.image}
-                          alt={course.title}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      
-                      <div className="md:col-span-3 flex flex-col justify-between">
-                        <div>
-                          <h3 className="font-semibold text-lg mb-1">{course.title}</h3>
-                          <p className="text-sm text-muted-foreground mb-4">{course.instructor}</p>
+
+            {/* My Learning: Courses or Certifications */}
+            {activeLearningSection === "courses" && (
+              <>
+                {/* Enrolled Courses */}
+                <div>
+                  <h2 className="text-2xl font-bold mb-6">My Courses</h2>
+                  <div className="space-y-4">
+                    {enrolledCourses.map((course) => (
+                      <Card key={course.id} className="overflow-hidden hover:card-shadow-hover transition-smooth">
+                        <div className="grid md:grid-cols-4 gap-4 p-6">
+                          <div className="aspect-video md:aspect-square rounded-lg overflow-hidden">
+                            <img
+                              src={course.image}
+                              alt={course.title}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
                           
-                          <div className="space-y-2 mb-4">
-                            <div className="flex justify-between text-sm">
-                              <span className="text-muted-foreground">Progress</span>
-                              <span className="font-medium">{course.progress}% Complete</span>
+                          <div className="md:col-span-3 flex flex-col justify-between">
+                            <div>
+                              <h3 className="font-semibold text-lg mb-1">{course.title}</h3>
+                              <p className="text-sm text-muted-foreground mb-4">{course.instructor}</p>
+                              
+                              <div className="space-y-2 mb-4">
+                                <div className="flex justify-between text-sm">
+                                  <span className="text-muted-foreground">Progress</span>
+                                  <span className="font-medium">{course.progress}% Complete</span>
+                                </div>
+                                <Progress value={course.progress} />
+                                <p className="text-xs text-muted-foreground">
+                                  {course.completedLessons} of {course.totalLessons} lessons completed
+                                </p>
+                              </div>
                             </div>
-                            <Progress value={course.progress} />
-                            <p className="text-xs text-muted-foreground">
-                              {course.completedLessons} of {course.totalLessons} lessons completed
-                            </p>
+                            
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm text-muted-foreground">
+                                Last accessed {course.lastAccessed}
+                              </span>
+                              <Button>Continue Learning</Button>
+                            </div>
                           </div>
                         </div>
-                        
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm text-muted-foreground">
-                            Last accessed {course.lastAccessed}
-                          </span>
-                          <Button>Continue Learning</Button>
-                        </div>
-                      </div>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
+
+            {activeLearningSection === "certifications" && (
+              <>
+                {/* Certifications UI */}
+                <div>
+                  <h2 className="text-2xl font-bold mb-6">My Certifications</h2>
+
+                  {certificates.length === 0 ? (
+                    <Card className="p-12 text-center">
+                      <Award className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                      <h3 className="text-lg font-semibold mb-2">No certificates yet</h3>
+                      <p className="text-muted-foreground mb-4">
+                        Complete courses to earn certifications
+                      </p>
+                      <Button variant="outline" onClick={() => setActiveLearningSection("courses")}>
+                        Browse Courses
+                      </Button>
+                    </Card>
+                  ) : (
+                    <div className="grid md:grid-cols-2 gap-4">
+                      {certificates.map((cert) => (
+                        <Card key={cert.id} className="p-6">
+                          <div className="flex items-start gap-4">
+                            <div className="p-3 rounded-lg bg-primary/10">
+                              <Award className="h-8 w-8 text-primary" />
+                            </div>
+                            <div className="flex-1">
+                              <h3 className="font-semibold">{cert.title}</h3>
+                              <p className="text-sm text-muted-foreground">{cert.course}</p>
+                              <p className="text-xs text-muted-foreground mt-2">
+                                Issued {cert.date} • {cert.issuer} • {cert.grade}
+                              </p>
+                            </div>
+                            <div className="flex flex-col gap-2">
+                              <Button size="sm" onClick={() => alert("Viewing certificate (placeholder)")}>
+                                View
+                              </Button>
+                              <Button size="sm" variant="ghost" onClick={() => downloadCertificate(cert)}>
+                                Download
+                              </Button>
+                            </div>
+                          </div>
+                        </Card>
+                      ))}
                     </div>
-                  </Card>
-                ))}
-              </div>
-            </div>
-            
-            {/* Certificates Section */}
-            <div>
-              <h2 className="text-2xl font-bold mb-6">Certificates</h2>
-              <Card className="p-12 text-center">
-                <Award className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">No certificates yet</h3>
-                <p className="text-muted-foreground mb-4">
-                  Complete your first course to earn a certificate
-                </p>
-                <Button variant="outline">Browse Courses</Button>
-              </Card>
-            </div>
+                  )}
+                </div>
+              </>
+            )}
+
           </div>
         </div>
       </div>

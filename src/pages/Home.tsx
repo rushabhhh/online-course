@@ -9,6 +9,7 @@ import webDevCourse from "@/assets/course-web-dev.jpg";
 import designCourse from "@/assets/course-design.jpg";
 import dataScienceCourse from "@/assets/course-data-science.jpg";
 import marketingCourse from "@/assets/course-marketing.jpg";
+import { useNavigate } from "react-router-dom";
 
 const categories = [
     { 
@@ -145,6 +146,8 @@ const itemVariants = {
 };
 
 const Home = () => {
+    const navigate = useNavigate();
+
     return (
         <div className="min-h-screen bg-background">
             <Navigation />
@@ -1069,7 +1072,12 @@ const Home = () => {
                             money doing what you love
                         </p>
                         <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                            <Button size="lg" variant="secondary" className="group">
+                            <Button 
+                                size="lg" 
+                                variant="secondary" 
+                                className="group"
+                                onClick={() => navigate('/instructor')}
+                            >
                                 Get Started
                                 <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                             </Button>

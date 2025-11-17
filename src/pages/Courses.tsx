@@ -114,70 +114,7 @@ const Courses = () => {
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Filters Sidebar */}
-          <aside className={`lg:w-64 ${showFilters ? "block" : "hidden lg:block"}`}>
-            <div className="sticky top-24 space-y-6">
-              <div>
-                <h3 className="font-semibold mb-3 flex items-center gap-2">
-                  <SlidersHorizontal className="h-4 w-4" />
-                  Filters
-                </h3>
-              </div>
-              
-              {/* Category Filter */}
-              <div>
-                <h4 className="font-medium mb-3">Category</h4>
-                <div className="space-y-2">
-                  {categories.map((category) => (
-                    <div key={category} className="flex items-center">
-                      <Checkbox
-                        id={category}
-                        checked={selectedCategory === category}
-                        onCheckedChange={() => setSelectedCategory(category)}
-                      />
-                      <label
-                        htmlFor={category}
-                        className="ml-2 text-sm cursor-pointer"
-                      >
-                        {category}
-                      </label>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              
-              {/* Price Filter */}
-              <div>
-                <h4 className="font-medium mb-3">Price Range</h4>
-                <div className="space-y-2">
-                  {priceRanges.map((range) => (
-                    <div key={range} className="flex items-center">
-                      <Checkbox id={range} />
-                      <label htmlFor={range} className="ml-2 text-sm cursor-pointer">
-                        {range}
-                      </label>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              
-              {/* Rating Filter */}
-              <div>
-                <h4 className="font-medium mb-3">Rating</h4>
-                <div className="space-y-2">
-                  {ratings.map((rating) => (
-                    <div key={rating} className="flex items-center">
-                      <Checkbox id={rating} />
-                      <label htmlFor={rating} className="ml-2 text-sm cursor-pointer">
-                        {rating}
-                      </label>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              
-              <Button variant="outline" className="w-full">Clear All</Button>
-            </div>
-          </aside>
+          
           
           {/* Main Content */}
           <div className="flex-1">
@@ -197,18 +134,7 @@ const Courses = () => {
                   Filters
                 </Button>
                 
-                <Select defaultValue="popular">
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Sort by" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="popular">Most Popular</SelectItem>
-                    <SelectItem value="rating">Highest Rated</SelectItem>
-                    <SelectItem value="newest">Newest</SelectItem>
-                    <SelectItem value="price-low">Price: Low to High</SelectItem>
-                    <SelectItem value="price-high">Price: High to Low</SelectItem>
-                  </SelectContent>
-                </Select>
+                
               </div>
             </div>
             
@@ -219,14 +145,8 @@ const Courses = () => {
               ))}
             </div>
             
-            {/* Pagination */}
-            <div className="flex justify-center gap-2 mt-12">
-              <Button variant="outline">Previous</Button>
-              <Button variant="outline">1</Button>
-              <Button variant="default">2</Button>
-              <Button variant="outline">3</Button>
-              <Button variant="outline">Next</Button>
-            </div>
+          
+            
           </div>
         </div>
       </div>

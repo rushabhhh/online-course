@@ -18,20 +18,16 @@ const Navigation = () => {
             LearnHub
           </Link>
           
-          {/* Search Bar - Hidden on mobile */}
-          <div className="hidden md:flex items-center flex-1 max-w-xl mx-8">
-            <div className="relative w-full">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder="Search for courses..."
-                className="pl-10 bg-secondary/50 border-0 focus-visible:ring-1"
-              />
-            </div>
-          </div>
-          
           {/* Navigation Links */}
           <div className="flex items-center gap-6">
+            <Link
+            to="/"
+            className={`hidden md:block text-sm font-medium transition-colors hover:text-primary ${
+                isActive("/home") ? "text-primary" : "text-foreground"
+              }`}
+
+           >Home</Link>
+
             <Link
               to="/courses"
               className={`hidden md:block text-sm font-medium transition-colors hover:text-primary ${
@@ -49,17 +45,6 @@ const Navigation = () => {
             >
               My Learning
             </Link>
-            
-            <Button variant="ghost" size="icon" className="relative">
-              <ShoppingCart className="h-5 w-5" />
-              <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-primary text-xs text-primary-foreground flex items-center justify-center">
-                0
-              </span>
-            </Button>
-            
-            <Button variant="ghost" size="icon">
-              <User className="h-5 w-5" />
-            </Button>
           </div>
         </div>
       </div>

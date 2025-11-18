@@ -19,6 +19,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import Navigation from "@/components/Navigation";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 interface CourseData {
   title: string;
@@ -49,6 +50,9 @@ const Instructor = () => {
     duration: "",
     thumbnail: "",
   });
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
 
   const totalSteps = 2;
 
@@ -68,9 +72,75 @@ const Instructor = () => {
     }
   };
 
-  const handleSubmit = () => {
-    console.log("Course Data:", courseData);
-    // Handle course submission
+  const handleThumbnailSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      updateCourseData("thumbnail", reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleSubmit = async () => {
+    setError(null);
+    setSuccess(false);
+    
+    // Validation
+    if (!courseData.title || !courseData.description || !courseData.category || !courseData.price) {
+      setError("Please fill in all required fields.");
+      return;
+    }
+
+    setSaving(true);
+    
+    try {
+      console.log("Sending course data:", {
+        title: courseData.title,
+        description: courseData.description,
+        category: courseData.category,
+        price: parseFloat(courseData.price),
+        duration: courseData.duration,
+      });
+
+      const res = await axios.post("http://localhost:5000/api/courses", {
+        title: courseData.title,
+        description: courseData.description,
+        category: courseData.category,
+        price: parseFloat(courseData.price),
+        duration: courseData.duration,
+        thumbnail: courseData.thumbnail,
+      });
+
+      console.log("Response:", res.data);
+
+      if (res.status === 201) {
+        setSuccess(true);
+        // Optional: Reset form after 2 seconds
+        setTimeout(() => {
+          setCourseData({ 
+            title: "", 
+            description: "", 
+            category: "", 
+            price: "", 
+            duration: "", 
+            thumbnail: "" 
+          });
+          setCurrentStep(1);
+        }, 2000);
+      }
+    } catch (err: any) {
+      console.error("Error details:", err);
+      console.error("Error response:", err?.response);
+      
+      const errorMessage = err?.response?.data?.message 
+        || err?.message 
+        || "Failed to save course. Please check if the server is running.";
+      
+      setError(errorMessage);
+    } finally {
+      setSaving(false);
+    }
   };
 
   const containerVariants = {
@@ -266,19 +336,37 @@ const Instructor = () => {
                         </div>
                       </div>
 
+                      {/* Thumbnail */}
                       <div>
                         <Label htmlFor="thumbnail" className="text-base font-semibold">
                           Course Thumbnail
                         </Label>
-                        <div className="mt-2 border-2 border-dashed border-border rounded-xl p-8 text-center hover:border-primary/50 transition-colors cursor-pointer">
+                        <label
+                          htmlFor="thumbnail"
+                          className="mt-2 border-2 border-dashed border-border rounded-xl p-8 text-center hover:border-primary/50 transition-colors cursor-pointer block"
+                        >
                           <Upload className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
                           <p className="font-semibold mb-1">
-                            Click to upload or drag and drop
+                            {courseData.thumbnail ? "Change Image" : "Click to upload or drag and drop"}
                           </p>
                           <p className="text-sm text-muted-foreground">
-                            PNG, JPG up to 10MB
+                            PNG / JPG up to 10MB
                           </p>
-                        </div>
+                          {courseData.thumbnail && (
+                            <img
+                              src={courseData.thumbnail}
+                              alt="thumbnail preview"
+                              className="mt-4 mx-auto h-32 w-32 object-cover rounded-lg shadow"
+                            />
+                          )}
+                          <Input
+                            id="thumbnail"
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={handleThumbnailSelect}
+                          />
+                        </label>
                       </div>
                     </div>
                   </div>
@@ -363,6 +451,17 @@ const Instructor = () => {
                         </div>
                       </div>
 
+                      {error && (
+                        <div className="text-red-600 font-medium bg-red-100/40 dark:bg-red-900/30 border border-red-300 dark:border-red-700 rounded-md p-3 text-sm">
+                          {error}
+                        </div>
+                      )}
+                      {success && (
+                        <div className="text-green-600 font-medium bg-green-100/40 dark:bg-green-900/30 border border-green-300 dark:border-green-700 rounded-md p-3 text-sm">
+                          Course published successfully.
+                        </div>
+                      )}
+
                       <motion.div
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
@@ -370,10 +469,15 @@ const Instructor = () => {
                         <Button
                           size="lg"
                           onClick={handleSubmit}
-                          className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white text-lg font-bold py-6"
+                          disabled={saving}
+                          className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white text-lg font-bold py-6 disabled:opacity-60"
                         >
-                          <CheckCircle2 className="w-5 h-5 mr-2" />
-                          Publish Course
+                          {saving ? "Publishing..." : (
+                            <>
+                              <CheckCircle2 className="w-5 h-5 mr-2" />
+                              Publish Course
+                            </>
+                          )}
                         </Button>
                       </motion.div>
                     </div>

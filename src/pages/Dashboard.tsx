@@ -44,7 +44,7 @@ const enrolledCourses = [
 const stats = [
   { label: "Courses Enrolled", value: "3", icon: TrendingUp },
   { label: "Hours Learned", value: "127", icon: Clock },
-  { label: "Certificates", value: "5", icon: Award },
+  { label: "Certificates", value: "1", icon: Award },
 ];
 
 // New sample certificates (replace or extend with real data)

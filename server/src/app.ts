@@ -7,7 +7,7 @@ const app = express();
 
 // Enable CORS for your frontend (add port 8081)
 app.use(cors({ 
-  origin: ["http://localhost:5173", "http://localhost:5174", "http://localhost:8081"],
+  origin: ["http://localhost:5173", "http://localhost:5174", "http://localhost:8080"],
   credentials: true 
 }));
 
